@@ -163,8 +163,6 @@ export default function RegistrationScreen() {
           style={styles.image}
           source={require("../assets/images/BG.jpg")}
         />
-
-        {/* </ImageBackground> */}
       </View>
     </TouchableWithoutFeedback>
   );
