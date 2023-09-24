@@ -10,6 +10,8 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Dimensions,
+  ScrollView,
 } from "react-native";
 
 const initialState = {
@@ -23,6 +25,12 @@ export default function LoginScreen() {
   const [state, setState] = useState(initialState);
   const [hasFocusEmail, setHasFocusEmail] = useState(false);
   const [hasFocusPassword, setHasFocusPassword] = useState(false);
+
+  const handleSubmit = () => {
+    keyboardHide();
+    console.log("state", state);
+    setState(initialState);
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -46,18 +54,15 @@ export default function LoginScreen() {
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
-        <ImageBackground
-          style={styles.image}
-          source={require("../assets/images/BG.jpg")}
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
-          >
+          <ScrollView>
             <View style={styles.wrapper}>
               <View
                 style={{
                   ...styles.form,
-                  marginBottom: isShowKeyboard ? 0 : 145,
+                  marginBottom: isShowKeyboard ? 20 : 145,
                 }}
               >
                 <View style={styles.header}>
@@ -71,8 +76,12 @@ export default function LoginScreen() {
                     }}
                     placeholder="Адреса електронної пошти"
                     placeholderTextColor={"#BDBDBD"}
+                    value={state.email}
                     onFocus={() => handleFocusEmail()}
                     onBlur={() => setHasFocusEmail(false)}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({ ...prevState, email: value }))
+                    }
                   />
                 </View>
                 <View style={{ marginTop: 16, position: "relative" }}>
@@ -83,8 +92,15 @@ export default function LoginScreen() {
                     }}
                     placeholder="Пароль"
                     placeholderTextColor={"#BDBDBD"}
+                    value={state.password}
                     onFocus={() => handleFocusPassword()}
                     onBlur={() => setHasFocusPassword(false)}
+                    onChangeText={(value) =>
+                      setState((prevState) => ({
+                        ...prevState,
+                        password: value,
+                      }))
+                    }
                     secureTextEntry={!showPassword}
                   />
                   <TouchableOpacity
@@ -94,22 +110,27 @@ export default function LoginScreen() {
                     <Text style={styles.btnShowPasswordTitle}>Показати</Text>
                   </TouchableOpacity>
                 </View>
-                <TouchableOpacity style={styles.btn} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={styles.btn}
+                  activeOpacity={0.8}
+                  onPress={handleSubmit}
+                >
                   <Text style={styles.btnTitle}>Увійти</Text>
                 </TouchableOpacity>
                 <View style={styles.linkWrapper}>
                   <Text style={styles.link}>Немає акаунту?</Text>
-                  <TouchableOpacity
-                    // style={styles.btn}
-                    activeOpacity={0.8}
-                  >
+                  <TouchableOpacity activeOpacity={0.8}>
                     <Text style={styles.link}>Зареєструватися</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
-          </KeyboardAvoidingView>
-        </ImageBackground>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        <ImageBackground
+          style={styles.image}
+          source={require("../assets/images/BG.jpg")}
+        />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -119,11 +140,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    justifyContent: "flex-end",
   },
   image: {
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "flex-end",
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
   },
   wrapper: {
     backgroundColor: "#fff",

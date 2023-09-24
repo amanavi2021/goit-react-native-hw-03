@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  Dimensions,
 } from "react-native";
 
 const initialState = {
@@ -28,6 +29,12 @@ export default function RegistrationScreen() {
   const [hasFocusLogin, setHasFocusLogin] = useState(false);
   const [hasFocusEmail, setHasFocusEmail] = useState(false);
   const [hasFocusPassword, setHasFocusPassword] = useState(false);
+
+  const handleSubmit = () => {
+    keyboardHide();
+    console.log("state", state);
+    setState(initialState);
+  };
 
   const keyboardHide = () => {
     setIsShowKeyboard(false);
@@ -56,88 +63,108 @@ export default function RegistrationScreen() {
   return (
     <TouchableWithoutFeedback onPress={keyboardHide}>
       <View style={styles.container}>
-        <ImageBackground
-          style={styles.image}
-          source={require("../assets/images/BG.jpg")}
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
-          >
-            <View style={styles.wrapper}>
-              <View style={styles.avatarWrapper}>
-                <Image style={styles.avatar} />
-                <AddSvg style={styles.addIcon} width={25} height={25} />
+          <View style={styles.wrapper}>
+            <View style={styles.avatarWrapper}>
+              <Image style={styles.avatar} />
+              <AddSvg style={styles.addIcon} width={25} height={25} />
+            </View>
+            <View
+              style={{
+                ...styles.form,
+                marginBottom: isShowKeyboard ? 20 : 79,
+              }}
+            >
+              <View style={styles.header}>
+                <Text style={styles.headerTitle}>Реєстрація</Text>
+              </View>
+              <View>
+                <TextInput
+                  style={{
+                    ...styles.input,
+                    borderColor: hasFocusLogin ? "#FF6C00" : "#E8E8E8",
+                  }}
+                  placeholder="Логін"
+                  placeholderTextColor={"#BDBDBD"}
+                  value={state.login}
+                  onFocus={() => handleFocusLogin()}
+                  onBlur={() => setHasFocusLogin(false)}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, login: value }))
+                  }
+                />
+              </View>
+              <View style={{ marginTop: 16 }}>
+                <TextInput
+                  style={{
+                    ...styles.input,
+                    borderColor: hasFocusEmail ? "#FF6C00" : "#E8E8E8",
+                  }}
+                  placeholder="Адреса електронної пошти"
+                  placeholderTextColor={"#BDBDBD"}
+                  value={state.email}
+                  onFocus={() => handleFocusEmail()}
+                  onBlur={() => setHasFocusEmail(false)}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, email: value }))
+                  }
+                />
               </View>
               <View
                 style={{
-                  ...styles.form,
-                  marginBottom: isShowKeyboard ? 20 : 79,
+                  marginTop: 16,
+                  position: "relative",
                 }}
               >
-                <View style={styles.header}>
-                  <Text style={styles.headerTitle}>Реєстрація</Text>
-                </View>
-                <View>
-                  <TextInput
-                    style={{
-                      ...styles.input,
-                      borderColor: hasFocusLogin ? "#FF6C00" : "#E8E8E8",
-                    }}
-                    placeholder="Логін"
-                    placeholderTextColor={"#BDBDBD"}
-                    onFocus={() => handleFocusLogin()}
-                    onBlur={() => setHasFocusLogin(false)}
-                  />
-                </View>
-                <View style={{ marginTop: 16 }}>
-                  <TextInput
-                    style={{
-                      ...styles.input,
-                      borderColor: hasFocusEmail ? "#FF6C00" : "#E8E8E8",
-                    }}
-                    placeholder="Адреса електронної пошти"
-                    placeholderTextColor={"#BDBDBD"}
-                    onFocus={() => handleFocusEmail()}
-                    onBlur={() => setHasFocusEmail(false)}
-                  />
-                </View>
-                <View
+                <TextInput
                   style={{
-                    marginTop: 16,
-                    position: "relative",
+                    ...styles.input,
+                    borderColor: hasFocusPassword ? "#FF6C00" : "#E8E8E8",
                   }}
+                  placeholder="Пароль"
+                  placeholderTextColor={"#BDBDBD"}
+                  value={state.password}
+                  onFocus={() => handleFocusPassword()}
+                  onBlur={() => setHasFocusPassword(false)}
+                  onChangeText={(value) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      password: value,
+                    }))
+                  }
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={toggleShowPassword}
                 >
-                  <TextInput
-                    style={{
-                      ...styles.input,
-                      borderColor: hasFocusPassword ? "#FF6C00" : "#E8E8E8",
-                    }}
-                    placeholder="Пароль"
-                    placeholderTextColor={"#BDBDBD"}
-                    onFocus={() => handleFocusPassword()}
-                    onBlur={() => setHasFocusPassword(false)}
-                    secureTextEntry={!showPassword}
-                  />
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    onPress={toggleShowPassword}
-                  >
-                    <Text style={styles.btnShowPasswordTitle}>Показати</Text>
-                  </TouchableOpacity>
-                </View>
-                <TouchableOpacity style={styles.btn} activeOpacity={0.8}>
-                  <Text style={styles.btnTitle}>Зареєстуватися</Text>
+                  <Text style={styles.btnShowPasswordTitle}>Показати</Text>
                 </TouchableOpacity>
-                <View style={styles.linkWrapper}>
-                  <Text style={styles.link}>Вже є акаунт?</Text>
-                  <TouchableOpacity activeOpacity={0.8}>
-                    <Text style={styles.link}>Увійти</Text>
-                  </TouchableOpacity>
-                </View>
+              </View>
+              <TouchableOpacity
+                style={styles.btn}
+                activeOpacity={0.8}
+                onPress={handleSubmit}
+              >
+                <Text style={styles.btnTitle}>Зареєстуватися</Text>
+              </TouchableOpacity>
+              <View style={styles.linkWrapper}>
+                <Text style={styles.link}>Вже є акаунт?</Text>
+                <TouchableOpacity activeOpacity={0.8}>
+                  <Text style={styles.link}>Увійти</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </KeyboardAvoidingView>
-        </ImageBackground>
+          </View>
+        </KeyboardAvoidingView>
+        <ImageBackground
+          style={styles.image}
+          source={require("../assets/images/BG.jpg")}
+        />
+
+        {/* </ImageBackground> */}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -147,11 +174,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    justifyContent: "flex-end",
   },
   image: {
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "flex-end",
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
   },
   wrapper: {
     backgroundColor: "#fff",
